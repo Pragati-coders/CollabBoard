@@ -1,0 +1,375 @@
+// CollabBoard - Prisma Schema
+// Multi-tenant SaaS with Organization-based isolation
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ─────────────────────────────────────────────────
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MANAGER
+  MEMBER
+  GUEST
+}
+
+enum CardPriority {
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
+  NONE
+}
+
+enum NotificationType {
+  MENTION
+  ASSIGNMENT
+  COMMENT
+  INVITATION
+  DUE_DATE
+  BOARD_UPDATE
+  ROLE_CHANGE
+}
+
+enum ActivityType {
+  LOGIN
+  PROJECT_CREATED
+  PROJECT_DELETED
+  BOARD_CREATED
+  BOARD_DELETED
+  CARD_CREATED
+  CARD_MOVED
+  CARD_DELETED
+  COMMENT_CREATED
+  COMMENT_DELETED
+  MEMBER_INVITED
+  MEMBER_REMOVED
+  MEMBER_ROLE_CHANGED
+  ATTACHMENT_ADDED
+  LABEL_ADDED
+}
+
+enum SubscriptionPlan {
+  FREE
+  PRO
+  BUSINESS
+  ENTERPRISE
+}
+
+// ─── Organization (Workspace / Tenant) ──────────────────────
+
+model Organization {
+  id          String   @id @default(cuid())
+  clerkOrgId  String   @unique
+  name        String
+  slug        String   @unique
+  logoUrl     String?
+  plan        SubscriptionPlan @default(FREE)
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     Member[]
+  projects    Project[]
+  boards      Board[]
+  notifications Notification[]
+  activities  Activity[]
+  apiKeys     ApiKey[]
+
+  @@index([clerkOrgId])
+  @@index([slug])
+}
+
+// ─── User ───────────────────────────────────────────────────
+
+model User {
+  id          String   @id @default(cuid())
+  clerkUserId String   @unique
+  email       String   @unique
+  name        String
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members         Member[]
+  assignedCards   CardAssignee[]
+  comments        Comment[]
+  notifications   Notification[]
+  activities      Activity[]
+
+  @@index([clerkUserId])
+  @@index([email])
+}
+
+// ─── Member (User ↔ Organization) ───────────────────────────
+
+model Member {
+  id             String     @id @default(cuid())
+  organizationId String
+  userId         String
+  role           MemberRole @default(MEMBER)
+  isSuspended    Boolean    @default(false)
+  joinedAt       DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+// ─── Project ─────────────────────────────────────────────────
+
+model Project {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  description    String?
+  color          String   @default("#6366f1")
+  icon           String?
+  isArchived     Boolean  @default(false)
+  createdById    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  boards       Board[]
+
+  @@index([organizationId])
+}
+
+// ─── Board ────────────────────────────────────────────────────
+
+model Board {
+  id             String   @id @default(cuid())
+  organizationId String
+  projectId      String
+  name           String
+  description    String?
+  coverUrl       String?
+  isArchived     Boolean  @default(false)
+  createdById    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  columns      Column[]
+  labels       Label[]
+
+  @@index([organizationId])
+  @@index([projectId])
+}
+
+// ─── Column ───────────────────────────────────────────────────
+
+model Column {
+  id        String   @id @default(cuid())
+  boardId   String
+  name      String
+  order     Int
+  color     String   @default("#94a3b8")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  board Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  cards Card[]
+
+  @@index([boardId])
+}
+
+// ─── Card ──────────────────────────────────────────────────────
+
+model Card {
+  id          String       @id @default(cuid())
+  columnId    String
+  title       String
+  description String?
+  order       Int
+  priority    CardPriority @default(NONE)
+  dueDate     DateTime?
+  coverUrl    String?
+  isArchived  Boolean      @default(false)
+  createdById String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  column      Column         @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  assignees   CardAssignee[]
+  labels      CardLabel[]
+  comments    Comment[]
+  attachments Attachment[]
+  checklists  Checklist[]
+
+  @@index([columnId])
+}
+
+// ─── Card Assignee ────────────────────────────────────────────
+
+model CardAssignee {
+  id         String   @id @default(cuid())
+  cardId     String
+  userId     String
+  assignedAt DateTime @default(now())
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([cardId, userId])
+  @@index([cardId])
+  @@index([userId])
+}
+
+// ─── Label ────────────────────────────────────────────────────
+
+model Label {
+  id      String @id @default(cuid())
+  boardId String
+  name    String
+  color   String
+
+  board Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  cards CardLabel[]
+
+  @@index([boardId])
+}
+
+// ─── Card Label ───────────────────────────────────────────────
+
+model CardLabel {
+  id      String @id @default(cuid())
+  cardId  String
+  labelId String
+
+  card  Card  @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  label Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@unique([cardId, labelId])
+}
+
+// ─── Comment ──────────────────────────────────────────────────
+
+model Comment {
+  id        String   @id @default(cuid())
+  cardId    String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+}
+
+// ─── Attachment ───────────────────────────────────────────────
+
+model Attachment {
+  id         String   @id @default(cuid())
+  cardId     String
+  name       String
+  url        String
+  size       Int
+  mimeType   String
+  uploadedBy String
+  createdAt  DateTime @default(now())
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+}
+
+// ─── Checklist ────────────────────────────────────────────────
+
+model Checklist {
+  id        String          @id @default(cuid())
+  cardId    String
+  title     String
+  createdAt DateTime        @default(now())
+
+  card  Card            @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  items ChecklistItem[]
+
+  @@index([cardId])
+}
+
+model ChecklistItem {
+  id          String    @id @default(cuid())
+  checklistId String
+  title       String
+  isCompleted Boolean   @default(false)
+  dueDate     DateTime?
+  assigneeId  String?
+
+  checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+
+  @@index([checklistId])
+}
+
+// ─── Notification ─────────────────────────────────────────────
+
+model Notification {
+  id             String           @id @default(cuid())
+  organizationId String
+  userId         String
+  type           NotificationType
+  title          String
+  message        String
+  isRead         Boolean          @default(false)
+  linkUrl        String?
+  createdAt      DateTime         @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, userId])
+  @@index([userId, isRead])
+}
+
+// ─── Activity Feed ────────────────────────────────────────────
+
+model Activity {
+  id             String       @id @default(cuid())
+  organizationId String
+  userId         String
+  type           ActivityType
+  entityId       String?
+  entityType     String?
+  entityName     String?
+  metadata       Json?
+  createdAt      DateTime     @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([userId])
+}
+
+// ─── API Keys ─────────────────────────────────────────────────
+
+model ApiKey {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  keyHash        String   @unique
+  lastUsedAt     DateTime?
+  expiresAt      DateTime?
+  createdById    String
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
