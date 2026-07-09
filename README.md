@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CollabBoard 🚀
 
 A production-ready, multi-tenant SaaS project management platform built with Next.js 15, Clerk, Supabase, and Prisma. Inspired by Linear, Notion, and Jira.
@@ -185,3 +186,7 @@ collabboard/
 ## License
 
 MIT — use freely in your portfolio.
+=======
+# CollabBoard
+⚡ CollabBoard — A full-stack multi-tenant SaaS app inspired by Linear &amp; Notion. Real-time drag-and-drop kanban, role-based access control, live presence indicators, analytics dashboard &amp; CI/CD. Built with Next.js 15 + TypeScript + Supabase.
+>>>>>>> 3818e4df16de11ef29fff87f5c85fe446534567b
