@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import type { ActivityType } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 interface LogActivityInput {
   orgId: string;
@@ -21,7 +22,7 @@ export async function logActivity(input: LogActivityInput): Promise<void> {
         entityId: input.entityId,
         entityType: input.entityType,
         entityName: input.entityName,
-        metadata: input.metadata,
+        metadata: input.metadata as Prisma.InputJsonValue,      
       },
     });
   } catch {
