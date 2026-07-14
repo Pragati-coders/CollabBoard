@@ -16,7 +16,7 @@ Build scalable project management experiences with real-time collaboration, mult
 
 ### 🌐 Live Demo
 
-🔗 https://vercel.com/pragati-mishra-s-projects/collab-board
+🔗 https://collab-board-virid.vercel.app/
 
 ### 📂 Repository
 
@@ -47,12 +47,34 @@ Designed with modern architecture principles, CollabBoard leverages Next.js 15 S
 
 ---
  ## Screenshots
- <img width="960" height="504" alt="Screenshot 2026-07-09 172548" src="https://github.com/user-attachments/assets/604408e2-556a-490a-a456-28547178d327" />
- <img width="960" height="504" alt="Screenshot 2026-07-09 172639" src="https://github.com/user-attachments/assets/6f931552-6560-4e10-8783-fea910dca650" />
-<img width="960" height="504" alt="Screenshot 2026-07-09 172803" src="https://github.com/user-attachments/assets/5c3ddd0c-02fa-410b-8a8f-d7c2764fbbec" />
-<img width="960" height="504" alt="Screenshot 2026-07-09 172751" src="https://github.com/user-attachments/assets/889ab82e-8797-49c1-adff-ae87050e4c87" />
-<img width="960" height="504" alt="Screenshot 2026-07-09 172705" src="https://github.com/user-attachments/assets/4d81f862-68a8-473e-9246-aa7135359214" />
-<img width="960" height="504" alt="Screenshot 2026-07-09 172652" src="https://github.com/user-attachments/assets/897af278-05ea-401b-b3a9-2bc405434643" />
+ 
+ [Landing-Page]
+<img width="960" height="471" alt="landing-page (CollabBorad)" src="https://github.com/user-attachments/assets/ecd7c344-41d9-4e07-9196-c1ec30b9dee0" />
+
+ [Setup(Page)]
+<img width="960" height="476" alt="Setup - (CollabBoard)" src="https://github.com/user-attachments/assets/510f0f40-f0a5-4cce-b940-61c719c81568" />
+
+[DashBoard]
+<img width="960" height="415" alt="Dashboard(Collabbboard)" src="https://github.com/user-attachments/assets/cc403a9c-eeb4-4cfa-b53c-99f6958b1909" />
+
+[Project]
+<img width="960" height="423" alt="Project(collabBorad)" src="https://github.com/user-attachments/assets/cdd738d5-f292-4d47-b84a-47eaffebcf30" />
+
+[Task]
+<img width="960" height="419" alt="Tasks (CollabBoard)" src="https://github.com/user-attachments/assets/b7d9151d-8728-49f7-8430-c050f477dcaa" />
+
+[Teams]
+<img width="960" height="416" alt="Teams (CollabBoard)" src="https://github.com/user-attachments/assets/3a6d20c7-2548-4955-8a57-91e70f4a6519" />
+
+[Analytics]
+<img width="960" height="426" alt="Analytics(CollabBoard)" src="https://github.com/user-attachments/assets/2015addf-bd97-44bf-a4e4-514849ce179a" />
+
+
+
+
+
+
+
 
 ---
 
