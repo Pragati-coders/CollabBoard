@@ -16,7 +16,7 @@ Build scalable project management experiences with real-time collaboration, mult
 
 ### 🌐 Live Demo
 
-🔗 https://your-vercel-link.vercel.app
+🔗 https://vercel.com/pragati-mishra-s-projects/collab-board
 
 ### 📂 Repository
 
