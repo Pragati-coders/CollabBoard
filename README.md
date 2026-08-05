@@ -967,7 +967,7 @@ This project is licensed under the **MIT License**.
 
 ### Pragati 
 
-Full Stack Developer
+Full Stack Developer 
 
 - 💼 Open to Software Engineering Opportunities
 - 🌎 India
