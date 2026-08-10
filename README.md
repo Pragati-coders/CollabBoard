@@ -920,7 +920,6 @@ The application can be monitored using
 - Jira Import
 - Dark Mode Enhancements
 - Mobile Application
-- Offline Support
 - Push Notifications
 - Audit Logs
 - Team Analytics Dashboard
